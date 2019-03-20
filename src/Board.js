@@ -33,7 +33,7 @@ class Board extends Component {
   static defaultProps = {
     nrows: 5,
     ncols: 5,
-    // chanceLightStartsOn: ??????
+    chanceLightStartsOn: 0.25
   }
   constructor(props) {
     super(props);
@@ -51,7 +51,7 @@ class Board extends Component {
     for (let x = 0; x < this.props.nrows; x++) {
       let row = [];
       for (let y = 0; y < this.props.ncols; y++) {
-        row.push(Math.floor(Math.random() * 2));
+        row.push(Math.random() < this.props.chanceLightStartsOn);
       }
       board.push(row);
     }
@@ -75,12 +75,18 @@ class Board extends Component {
       }
     }
 
-    // TODO: flip this cell and the cells around it
+    //flip this cell and the cells around it
+    flipCell(y,x);
+    flipCell(y-1,x);
+    flipCell(y+1,x);
+    flipCell(y,x-1);
+    flipCell(y,x+1);
 
     // win when every cell is turned off
-    // TODO: determine is the game has been won
-
-    // this.setState({board, hasWon});
+    let hasWon = board.every(row=> row.every(c=> !c))
+    
+    this.setState({board, hasWon});
+  
   }
 
 
@@ -88,30 +94,31 @@ class Board extends Component {
 
   render() {
 
-    // if the game is won, just show a winning msg & render nothing else
+    if (this.state.hasWon) {
+      return <p>You Won!</p>
+    }
 
-    // TODO
-
-
-    return (
-      <table>
-        <tbody>
-        {this.state.board.map((cArray, i) => (
-          <tr key={`${i}`}>
-            {cArray.map((c, j) => {
-              return < Cell
-                      key={`${i}-${j}`}
-                      isLit={c}
-                      flipCellsAroundMe={() => this.flipCellsAround(i, j)}
-                    />
-            })}
-          </tr>
-        )
-        )
-        }
-        </tbody>
-      </table>
-    )
+    else {
+      return (
+        <table>
+          <tbody>
+          {this.state.board.map((row, i) => (
+            <tr key={`${i}`}>
+              {row.map((c, j) => {
+                return < Cell
+                        key={`${i}-${j}`}
+                        isLit={c}
+                        flipCellsAroundMe={() => this.flipCellsAround(`${i}-${j}`)}
+                      />
+              })}
+            </tr>
+          )
+          )
+          }
+          </tbody>
+        </table>
+      )
+    }
   }
 }
 
