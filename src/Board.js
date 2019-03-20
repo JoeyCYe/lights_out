@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Cell from "./Cell";
 import './Board.css';
 
@@ -30,10 +30,17 @@ import './Board.css';
  **/
 
 class Board extends Component {
-
+  static defaultProps = {
+    nrows: 5,
+    ncols: 5,
+    // chanceLightStartsOn: ??????
+  }
   constructor(props) {
     super(props);
-
+    this.state = {
+      hasWon: false,
+      board: this.createBoard()
+    }
     // TODO: set initial state
   }
 
@@ -41,14 +48,21 @@ class Board extends Component {
 
   createBoard() {
     let board = [];
-    // TODO: create array-of-arrays of true/false values
+    for (let x = 0; x < this.props.nrows; x++) {
+      let row = [];
+      for (let y = 0; y < this.props.ncols; y++) {
+        row.push(Math.floor(Math.random() * 2));
+      }
+      board.push(row);
+    }
+    console.log(board);
     return board
   }
 
   /** handle changing a cell: update board & determine if winner */
 
   flipCellsAround(coord) {
-    let {ncols, nrows} = this.props;
+    let { ncols, nrows } = this.props;
     let board = this.state.board;
     let [y, x] = coord.split("-").map(Number);
 
@@ -66,7 +80,7 @@ class Board extends Component {
     // win when every cell is turned off
     // TODO: determine is the game has been won
 
-    this.setState({board, hasWon});
+    // this.setState({board, hasWon});
   }
 
 
@@ -78,9 +92,26 @@ class Board extends Component {
 
     // TODO
 
-    // make table board
 
-    // TODO
+    return (
+      <table>
+        <tbody>
+        {this.state.board.map((cArray, i) => (
+          <tr key={`${i}`}>
+            {cArray.map((c, j) => {
+              return < Cell
+                      key={`${i}-${j}`}
+                      isLit={c}
+                      flipCellsAroundMe={() => this.flipCellsAround(i, j)}
+                    />
+            })}
+          </tr>
+        )
+        )
+        }
+        </tbody>
+      </table>
+    )
   }
 }
 
